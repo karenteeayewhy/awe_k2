@@ -1,0 +1,1014 @@
+<?php
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+*/
+function businesslist_menu() {
+    $items['businesslist'] = array(
+            'title' => 'List of Giving Businesses(Buy 1 Give 1)',
+            'page callback' => 'businesslist_results',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK
+    );
+    $items['businessstory'] = array(
+            'title' => 'ABOUT THE BUSINESS',
+            'page callback' => 'businessstory_retrieve',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK
+    );
+    $items['dgi_lgi/view_all_causes'] = array(
+            'title' => 'SUPPORTED CAUSES',
+            'title callback' => 'display_all_title_callback',
+            'title arguments' => array('SUPPORTED CAUSES BY '),
+            'page callback' => 'display_all_supported_cause',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK
+    );
+    $items['dgi_lgi/view_all_dg'] = array(
+            'title' => 'DIRECT GIVING IMPACT',
+            'title callback' => 'display_all_title_callback',
+            'title arguments' => array('DIRECT GIVING IMPACT OF '),
+            'page callback' => 'display_all_dg',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK
+    );
+    $items['dgi_lgi/view_all_lg'] = array(
+            'title' => 'LEVERAGED GIVING IMPACT',
+            'title callback' => 'display_all_title_callback',
+            'title arguments' => array('LEVERAGED GIVING IMPACT OF '),
+            'page callback' => 'display_all_lg',
+            'access callback' => TRUE,
+            'type' => MENU_CALLBACK
+    );
+    return $items;
+}
+
+
+
+function businesslist_results() {
+ drupal_add_js(drupal_get_path('module', 'businesslist') .'/js/jquery.ae.image.resize.min.js');
+  drupal_add_js(drupal_get_path('module', 'businesslist') .'/js/test.js');
+    $html = '<form name = "browse" action = "/buy1give1/?q=businesslist" method  = "post">
+             <table class="listing">
+			 <tr><td colspan="4"><p><span style="font-size: 50px; line-height: 105%; font-family: Arial black;"><strong>B1G1 Businesses</strong></span><span style="float:right; width:110px;margin-top: 20px;"><g:plusone></g:plusone>
+				  <script type="text/javascript">// <![CDATA[
+   (function() {
+     var po = document.createElement("script");
+     po.type = "text/javascript"; po.async = true;
+     po.src = "https://apis.google.com/js/plusone.js";
+     var s = document.getElementsByTagName("script")[0];
+     s.parentNode.insertBefore(po, s);
+    })();
+// ]]></script></span></p>
+			 </td></tr>
+             <tr>';
+
+    $html = $html.'<td>Country:<br /> <select name = "Company_Country" class="form-select" style="width:150px">
+                   <option value = "" selected = "selected">All Countries</option>';
+    $sql = "SELECT DISTINCT iso, name FROM {company_profile_values} c, {profile_location_country} pc WHERE c.fid=51 AND c.value = iso";
+    $result = db_query($sql);
+    while ($data = db_fetch_object($result)) {
+        $html = $html.'<option value = "'.$data->iso.'">'.$data->name.'</option>';
+    }
+    $html = $html.'</select></td>';
+	//
+	  $optionsSql = db_result(db_query('SELECT `options` FROM `profile_fields` WHERE `fid` =210 LIMIT 1'));
+	  //echo check_plain($optionsSql);
+	  //$opts = $row['options'];
+	  	$catsOpt = '';
+		$optarr =	preg_split ('/$\R?^/m', $optionsSql);
+		for($i=0;$i<sizeof($optarr);$i++)
+		{
+			$catsOpt .= '<option value="'.trim($optarr[$i]).'">'.$optarr[$i].'</option>';
+		}
+	//
+
+    $html = $html.'<td>Business Category:<br /> <select name = "Project_Category" class="form-select" style="width:150px">';
+    $html = $html.'<option value = "" selected = "selected">All Categories</option>';
+    /*$sql = "SELECT DISTINCT category1 from contribution where category1 is not null
+            UNION
+            SELECT DISTINCT category2 from contribution where category2 is not null and category2 != ''";
+    $result = db_query($sql);
+    while ($data = db_fetch_object($result)) {
+       $html = $html.'<option value = "'.$data->category1.'">'.$data->category1.'</option>';
+    }*/
+	$html .= $catsOpt;
+    $html = $html.'</select></td>';
+
+    $html .= '<td>Member Status:<br />
+                    <select name= "member_status" class="form-select" style="width:100px">
+                        <option value = "" selected = "selected">All Members</option>
+                        <option value = "1">Certified Members</option>
+                    </select>
+              </td>';
+
+    //$totalCompany = db_result(db_query("SELECT COUNT(distinct cid) FROM {company_profile_values}")) ;
+	//Code start for the displaying the total business users
+	$totalCompany = db_result(db_query("SELECT COUNT( DISTINCT u.uid ) FROM users u, users_roles ur WHERE u.uid = ur.uid AND (ur.rid =6 OR ur.rid =9 OR ur.rid =13 OR ur.rid =14 OR ur.rid =15) ")) ;
+	//End code for the displaying the total business users.
+    $clearScript = '<script type="text/javascript">
+                    function clearText(){
+                        if(document.browse.Company_Text.value == "enter your search keyword") {
+                            document.browse.Company_Text.value = "";
+                        }
+                    }
+                    </script>';
+    $html = $html. $clearScript;
+    $html = $html .'<td valign="bottom">';
+    $html = $html .'<div style="font-size: 14pt; color: #DC6E02; font-weight:bold">
+                    <input class="form-text" name="Company_Text" value="enter your search keyword" size="30"  style="height: 20px;" onFocus="clearText();"/>
+                    </input></div>
+                    </td>';
+    $html = $html .'</tr><tr>';
+    $html = $html .'<td align="left">';
+    $html .= '        <div style="font-size: 13pt; color: #DC6E02; font-weight:bold">';
+    $html .= '                    <input class="form-submit" type = "submit" value = "SEARCH"></input></form>';
+    $html .= '    </div>';
+    $html .= '</td>';
+    $html = $html.'<td align="right" colspan = 2>
+                   <b></b>
+                   </td>';
+    $html = $html .'<td align="right"><form name = "clear" action = "/buy1give1/?q=businesslist" method  = "post">
+                        <input class="form-submit" name = "reset" type = "submit" value = "Reset"></input>
+                    </form></td>';
+    $html = $html.'</tr></table>';
+
+    $uid = slot_get_uid();
+
+    if(isset($_POST['reset'])) {
+        slot_del($uid, 'businesslist');
+        drupal_goto('businesslist');
+    }
+
+    $todayDate = strtotime(date('Y-m-d H:i:s'));
+
+    if(isset($_POST['member_status']) && $_POST['member_status'] != '') {
+        $_SESSION['search_member_status'] =  " c_certified = ".$_POST['member_status']. " AND ";
+        slot_set('member_status',  " c_certified = ".$_POST['member_status']. " AND ", $uid, 'businesslist');
+        slot_set('member_status_result',  $_POST['member_status'], $uid, 'businesslist');
+    }else if(isset($_SESSION['search_member_status'])) {
+        if(isset($_POST['member_status'])) {
+            if($_POST['member_status'] != '') {
+                $_SESSION['search_member_status'] =  " c_certified = ".$_POST['member_status']. " AND ";
+                slot_set('member_status',  " c_certified = ".$_POST['member_status']. " AND ", $uid, 'businesslist');
+                slot_set('member_status_result',  $_POST['member_status'], $uid, 'businesslist');
+            }else {
+                $_SESSION['search_member_status'] = '';
+                slot_set('member_status',  '', $uid, 'businesslist');
+                slot_set('member_status_result',  'All', $uid, 'businesslist');
+            }
+        } else {
+
+        }
+    }else {
+        $_SESSION['search_member_status'] = '';
+        slot_set('member_status',  '', $uid, 'businesslist');
+        slot_set('member_status_result',  'All', $uid, 'businesslist');
+    }
+
+    if(isset($_POST['Company_Country']) && $_POST['Company_Country'] != '') {
+        $_SESSION['search_business_country'] =  "c_country = '".$_POST['Company_Country']. "' AND ";
+        slot_set('country',  "c_country = '".$_POST['Company_Country']. "' AND ", $uid, 'businesslist');
+        slot_set('country_result',  $_POST['Company_Country'], $uid, 'businesslist');
+    } else if(isset($_SESSION['search_business_country'])) {
+        if(isset($_POST['Company_Country'])) {
+            if($_POST['Company_Country'] != '') {
+                $_SESSION['search_business_country'] =  "c_country = '".$_POST['Company_Country']. "' AND ";
+                slot_set('country',  "c_country = '".$_POST['Company_Country']. "' AND ", $uid, 'businesslist');
+                slot_set('country_result',  $_POST['Company_Country'], $uid, 'businesslist');
+            }else {
+                $_SESSION['search_business_country'] = '';
+                slot_set('country', '', $uid, 'businesslist');
+                slot_set('country_result',  'All', $uid, 'businesslist');
+            }
+        } else {
+
+        }
+    } else {
+        $_SESSION['search_business_country'] = '';
+        slot_set('country', '', $uid, 'businesslist');
+        slot_set('country_result',  'All', $uid, 'businesslist');
+    }
+
+    if(isset($_POST['Project_Category']) && $_POST['Project_Category'] != '') {
+        $_SESSION['search_business_supportedgiving'] = "(c_ctg1 = '".$_POST['Project_Category']."' OR c_ctg2 = '".$_POST['Project_Category']. "') AND ";
+        slot_set('supportedgiving',"(c_ctg1 = '".$_POST['Project_Category']."' OR c_ctg2 = '".$_POST['Project_Category']. "') AND ", $uid, 'businesslist');
+        slot_set('supportedgiving_result',$_POST['Project_Category'], $uid, 'businesslist');
+    } else if(isset($_SESSION['search_business_supportedgiving'])) {
+        if(isset($_POST['Project_Category'])) {
+            if($_POST['Project_Category'] != '') {
+                $_SESSION['search_business_supportedgiving'] = "(c_ctg1 = '".$_POST['Project_Category']."' OR c_ctg2 = '".$_POST['Project_Category']. "') AND ";
+                slot_set('supportedgiving',"(c_ctg1 = '".$_POST['Project_Category']."' OR c_ctg2 = '".$_POST['Project_Category']. "') AND ", $uid, 'businesslist');
+                slot_set('supportedgiving_result',$_POST['Project_Category'], $uid, 'businesslist');
+            }else {
+                $_SESSION['search_business_supportedgiving'] = '';
+                slot_set('supportedgiving', '', $uid, 'businesslist');
+                slot_set('supportedgiving_result', 'All', $uid, 'businesslist');
+            }
+        } else {
+
+        }
+    } else {
+        $_SESSION['search_business_supportedgiving'] = '';
+        slot_set('supportedgiving', '', $uid, 'businesslist');
+        slot_set('supportedgiving_result', 'All', $uid, 'businesslist');
+    }
+
+    if(isset($_POST['Company_Text']) && $_POST['Company_Text'] != 'enter your search keyword' && $_POST['Company_Text'] != '') {
+        $_SESSION['search_business_keyword'] = $_POST['Company_Text'];
+        slot_set('search_text', $_POST['Company_Text'], $uid, 'businesslist');
+        slot_set('search_at', $todayDate, $uid, 'businesslist');
+    } else if(isset($_SESSION['search_business_keyword'])) {
+        if(isset($_POST['Company_Text']) ) {
+            if ($_POST['Company_Text'] != 'enter your search keyword' && $_POST['Company_Text'] != '') {
+                $_SESSION['search_business_keyword'] = $_POST['Company_Text'];
+                slot_set('search_text', $_POST['Company_Text'], $uid, 'businesslist');
+            } else {
+                $_SESSION['search_business_keyword'] = '';
+                slot_set('search_text', '', $uid, 'businesslist');
+            }
+            slot_set('search_at', $todayDate, $uid, 'businesslist');
+        } else {
+
+        }
+    } else {
+        $_SESSION['search_business_keyword'] = '';
+        slot_set('search_text', '', $uid, 'businesslist');
+        slot_set('search_at', $todayDate, $uid, 'businesslist');
+    }
+
+    $search_text = slot_get('search_text', $uid, 'businesslist', '');
+    $supportedgiving = slot_get('supportedgiving', $uid, 'businesslist', '');
+    $supportedgiving_result = slot_get('supportedgiving_result', $uid, 'businesslist', '');
+    $country = slot_get('country', $uid, 'businesslist', '');
+    $country_result = slot_get('country_result', $uid, 'businesslist', '');
+    $member_status = slot_get('member_status', $uid, 'businesslist', '');
+    $member_status_result = slot_get('member_status_result', $uid, 'businesslist', '');
+    $search_at_date = slot_get('search_at', $uid, 'businesslist', '-');
+
+    if ($search_at_date == '-') {
+        $search_at = '';
+    } else {
+        $search_at = date('d-m-Y H:m', $search_at_date);
+    }
+
+    $company= "(SELECT * FROM
+                (
+				SELECT temp36.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic, c_secondary_pic, c_private, c_certified,c_ctg1,c_ctg2 FROM (
+SELECT temp27.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic, c_secondary_pic, c_private, c_certified,c_ctg1 FROM (
+				SELECT temp33.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic, c_secondary_pic, c_private, c_certified FROM
+		(SELECT temp31.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic, c_secondary_pic, c_private FROM
+		(SELECT temp25.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic, c_secondary_pic FROM
+                (SELECT temp15.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_primary_pic FROM
+                (SELECT temp13.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website FROM
+                (SELECT temp11.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission FROM
+                (SELECT temp9.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about FROM
+                (SELECT temp7.cid,c_name,c_country,c_industry,c_product_service, c_logo FROM
+                (SELECT temp5.cid,c_name,c_country,c_industry,c_product_service FROM
+                (SELECT temp3.cid,c_name,c_country,c_industry FROM
+                (SELECT temp1.cid,c_name,c_country FROM
+                (SELECT cid, VALUE AS c_name FROM company_profile_values WHERE fid=40) AS temp1
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_country FROM company_profile_values WHERE fid=51)AS temp2
+                ON temp1.cid= temp2.cid) AS temp3
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_industry FROM company_profile_values WHERE fid=62)AS temp4
+                ON temp3.cid=temp4.cid) AS temp5
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_product_service FROM company_profile_values WHERE fid=63)AS temp6
+                ON temp5.cid = temp6.cid) AS temp7
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_logo FROM company_profile_values WHERE fid=59) AS temp8
+                ON temp7.cid= temp8.cid) AS temp9
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_about FROM company_profile_values WHERE fid=57) AS temp10
+                ON temp9.cid = temp10.cid) AS temp11
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_mission FROM company_profile_values WHERE fid=64) AS temp12
+                ON temp11.cid = temp12.cid) AS temp13
+                LEFT OUTER JOIN
+                (SELECT cid,VALUE AS c_website FROM company_profile_values WHERE fid=58) AS temp14
+                ON temp13.cid = temp14.cid) AS temp15
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_primary_pic FROM company_profile_values WHERE fid=73) AS temp24
+                ON temp15.cid = temp24.cid) AS temp25
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_secondary_pic FROM company_profile_values WHERE fid=74) AS temp26
+                ON temp25.cid = temp26.cid) AS temp31
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_private FROM company_profile_values WHERE fid=206) AS temp32
+                ON temp31.cid = temp32.cid) AS temp33
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_certified FROM company_profile_values WHERE fid = 207) AS temp34
+                ON temp33.cid = temp34.cid) AS temp27
+				LEFT OUTER JOIN (SELECT cid, VALUE AS c_ctg1 FROM company_profile_values WHERE fid = 209) AS temp35 ON temp27.cid = temp35.cid) AS temp36 
+				LEFT OUTER JOIN (SELECT cid, VALUE AS c_ctg2 FROM company_profile_values WHERE fid = 210) AS temp37 ON temp36.cid = temp37.cid) AS temp38 
+                INNER JOIN
+                (SELECT company_id,category1,category2,contribution_pai_to_wc_date,contribution_status, MAX(contribution_last_date) AS contribution_last_date,time_of_donation, MIN(contribution_first_date) AS contribution_first_date
+                FROM(SELECT company_id, category1, category2, contribution_pai_to_wc_date, contribution_status,
+                MAX(contribution_paid_toB1G1) AS contribution_last_date, COUNT(company_id) AS time_of_donation,
+                MIN(contribution_paid_toB1G1) AS contribution_first_date FROM contribution c, users_roles ur
+                WHERE contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' AND
+                c.contributer_ID = ur.uid AND (ur.rid = 6 OR ur.rid = 9 OR ur.rid = 13 OR ur.rid = 14 OR ur.rid = 15)
+                GROUP BY company_id
+                UNION ALL
+                SELECT dg_con_cid, dg_proj_category, 'category2', dg_con_date, 'direct giving',
+                MAX(dg_con_date) AS contribution_last_date, COUNT(dg_con_cid) AS time_of_donation,
+                MIN(dg_con_date) AS contribution_first_date
+                FROM dg_contribution WHERE dg_con_status = 'approved'
+                GROUP BY dg_con_cid) AS contribution GROUP BY company_id) AS temp29
+                WHERE temp38.cid = temp29.company_id) AS c ";
+
+    $default_from = " FROM ".$company." where ".$country.$supportedgiving.$member_status. "c.cid IS NOT NULL AND (c_private <> 1 OR c_private IS NULL) ";
+
+    $default_sql = $default_from." AND (c_name LIKE '%".strtoupper($search_text)."%' OR c_country LIKE '%".strtoupper($search_text).
+            "%' OR c_industry LIKE '%".strtoupper($search_text)."%' OR c_product_service LIKE '%".strtoupper($search_text).
+            "%' OR category1 LIKE '%".strtoupper($search_text)."%' OR category2 LIKE '%".strtoupper($search_text).
+            "%' OR c_ctg1 LIKE '%".strtoupper($search_text)."%' OR c_ctg2 LIKE '%".strtoupper($search_text)."%') ORDER BY contribution_last_date DESC";
+
+    $sqlcount = "SELECT COUNT(c.cid) ".$default_sql;
+    $sql = "SELECT * ".$default_sql;
+
+    $resultProject = db_result(db_query($sqlcount));
+
+    $pager_num = 0;
+    $result = pager_query($sql, 10, $pager_num, $sqlcount);
+
+    $html .= '<br/>';
+    $html .= '<font color="#999999">'.$resultProject.'</font> <font color="#999999">out of </font><font color="#999999">'.$totalCompany .'</font> <font color="#999999"> B1G1 Businesses displayed:</font>';
+    $html .= '<br/>';
+
+    $html .= '<table class="listing"><tbody cellpadding="2" valign="top">';
+    while ($data  = db_fetch_object($result)) {
+        //echo $data->c_name."<br />";
+        $_SESSION['company_id'] = $data->cid;
+        $date = date("d/m/Y",$data->contribution_last_date);
+
+        $category1 = $data->category1;
+        if($data->category2 != '') {
+            $category1 = $data->category1.", ".$data->category2;
+        }
+
+        $pic_url = $data->c_logo;
+
+        if($data->c_logo == 'N' || $data->c_logo == '' || $data->c_logo == NULL) {
+            $pic_url = 'blank_image.png';
+        }
+        $c_about = $data->c_about;
+        if($c_about == 'NULL') {
+            $c_about = 'Please see our website or contact us for more information';
+        }
+// width="142" height="100"
+        $html = $html.'<tr><td>
+
+            <a href="?q=businessstory&companyID='.$data->cid.'">
+                <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url.'" class="resizeme1"/></a>
+            </td><td>
+                <table width="700px" class="listing">
+                    <tbody cellpadding="2" valign="top">
+                        <tr style="padding-bottom:1ex">
+                            <th bgcolor="#F7F7F7" width="500px" align="left">
+                                <a href="?q=businessstory&companyID='.$data->cid.'"><font size="3.1em" color="#232323">'.$data->c_name.'</font></a>'.
+                '</th>
+                             <th bgcolor="#F7F7F7" width="150px">
+                             </th>
+                             <th bgcolor="#F7F7F7" width="50px" align= "right">';
+        if($data->c_certified == 1) {
+            $html .= '<a href="" style="color:#11A1F4"
+                      title="\'Certified Giver\' status is given to BusinessesThatGive Members who have been giving regularly long-term through B1G1 Giving"
+                                                                onClick="return false">
+                     <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/icon/icon_CertifiedGiver.png" />
+                      </a>';
+        }
+        $html .= '
+                </th></tr>
+                <tr ><td width="500px" align="left" valign="top">
+                <font color="#999999">Supporting: </font><font color="#B3B3B3">'.$category1.'</font><br />'
+                .substr($c_about,0,130).'...<a href="?q=businessstory&companyID='.$data->cid.'"> More info</a>
+                </td>';
+        $country_sql = "SELECT DISTINCT iso, name FROM {company_profile_values} c, {profile_location_country} pc WHERE c.fid=51 AND c.value = iso";
+        $country_result = db_query($country_sql);
+        while ($iso = db_fetch_object($country_result)) {
+            if($iso->iso == $data->c_country ) {
+                $country = $iso->name;
+            }
+        }
+        $html .= '   <td valign="top" width="200px" colspan="2">';
+        $html .= '       <font color="#999999">Country:</font> <font >'.$country.'</font><br />';
+
+        //find new industry
+        $industry1 = db_result(db_query("select value from company_profile_values where cid = ".$data->cid." and fid = 307;"));
+        $industry2 = db_result(db_query("select value from company_profile_values where cid = ".$data->cid." and fid = 309;"));
+
+        //get the value of industry1
+        $cat1 = db_result(db_query("select category_name from lg_individual_keyword_matching where category_id = ".$industry1."")) ;
+        $cat2 = db_result(db_query("select category_name from lg_individual_keyword_matching where category_id = ".$industry2."" ));
+
+        if($data->c_industry != '' && $data->c_industry != NULL) {
+            $industry = $data->c_industry;
+            if(is_numeric($industry[0])) {
+                $industry = profile_location_get_industry($data->c_industry);
+            }else {
+                $industry = $data->c_industry;
+            }
+        }
+		
+		
+        $html .= '			<font color="#999999">Industry:</font> <font >'. $industry1.'</font><br/>';
+        $html .= '			<font color="#999999">Last Giving:</font> <font >'.$date;
+        $html .= '        </font></td></tr></tbody></table></td></tr><tr><td></td><td></td></tr>';
+
+    }
+    $html .= '</tbody></table>';
+    // Add links to remaining pages of results.
+    return $html.theme('pager', NULL, 10, $pager_num);
+    //return $output.theme('pager', NULL, 10, $pager_num);
+}
+
+function businessstory_retrieve() {
+  drupal_add_js(drupal_get_path('module', 'businesslist') .'/js/jquery.ae.image.resize.min.js');
+  drupal_add_js(drupal_get_path('module', 'businesslist') .'/js/test.js');
+  drupal_add_js(drupal_get_path('module', 'contribution') .'/jquery-ui-1.8.16.custom.min.js');
+  drupal_add_css(drupal_get_path('module', 'contribution') .'/giving.css');
+    $check_cid = db_result(db_query("SELECT COUNT(fid) FROM company_profile_values WHERE cid=".$_GET['companyID']));
+    if ($check_cid == 0) {
+        drupal_set_message("Could not find the business detail. You are redirected to home page.");
+        drupal_goto('');
+    }
+
+    $current_user = $GLOBALS['user']->uid;
+    $html = '<p align="right"><span style="float:left; width:110px;"><g:plusone></g:plusone>
+				  <script type="text/javascript">// <![CDATA[
+   (function() {
+     var po = document.createElement("script");
+     po.type = "text/javascript"; po.async = true;
+     po.src = "https://apis.google.com/js/plusone.js";
+     var s = document.getElementsByTagName("script")[0];
+     s.parentNode.insertBefore(po, s);
+    })();
+// ]]></script></span>
+  <a href="/buy1give1/?q=businesslist"> << Back to full business list</a></p>';
+    $company= "(SELECT * FROM
+                (SELECT temp31.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook,c_twitter, c_phone,c_primary_pic, c_secondary_pic, uid FROM
+                (SELECT temp25.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook,c_twitter, c_phone,c_primary_pic, c_secondary_pic FROM
+                (SELECT temp23.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook,c_twitter, c_phone,c_primary_pic FROM
+                (SELECT temp21.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook,c_twitter, c_phone FROM
+                (SELECT temp19.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook,c_twitter FROM
+                (SELECT temp17.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email,c_facebook FROM
+                (SELECT temp15.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website,c_email FROM
+                (SELECT temp13.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission,c_website FROM
+                (SELECT temp11.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about,c_mission FROM
+                (SELECT temp9.cid,c_name,c_country,c_industry,c_product_service, c_logo, c_about FROM
+                (SELECT temp7.cid,c_name,c_country,c_industry,c_product_service, c_logo FROM
+                (SELECT temp5.cid,c_name,c_country,c_industry,c_product_service FROM
+                (SELECT temp3.cid,c_name,c_country,c_industry FROM
+                (SELECT temp1.cid,c_name,c_country FROM
+                (SELECT cid, VALUE AS c_name FROM company_profile_values WHERE fid=40) AS temp1
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_country FROM company_profile_values WHERE fid=51)AS temp2
+                ON temp1.cid= temp2.cid) AS temp3
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_industry FROM company_profile_values WHERE fid=62)AS temp4
+                ON temp3.cid=temp4.cid) AS temp5
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_product_service FROM company_profile_values WHERE fid=63)AS temp6
+                ON temp5.cid = temp6.cid) AS temp7
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_logo FROM company_profile_values WHERE fid=59) AS temp8
+                ON temp7.cid= temp8.cid) AS temp9
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_about FROM company_profile_values WHERE fid=57) AS temp10
+                ON temp9.cid = temp10.cid) AS temp11
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_mission FROM company_profile_values WHERE fid=64) AS temp12
+                ON temp11.cid = temp12.cid) AS temp13
+                LEFT OUTER JOIN
+                (SELECT cid,VALUE AS c_website FROM company_profile_values WHERE fid=58) AS temp14
+                ON temp13.cid = temp14.cid) AS temp15
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_email FROM company_profile_values WHERE fid=41) AS temp16
+                ON temp15.cid = temp16.cid) AS temp17
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_facebook FROM company_profile_values WHERE fid=65) AS temp18
+                ON temp17.cid = temp18.cid) AS temp19
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_twitter FROM company_profile_values WHERE fid=66) AS temp20
+                ON temp19.cid = temp20.cid) AS temp21
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_phone FROM company_profile_values WHERE fid=42) AS temp22
+                ON temp21.cid = temp22.cid) AS temp23
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_primary_pic FROM company_profile_values WHERE fid=73) AS temp24
+                ON temp23.cid = temp24.cid) AS temp25
+                LEFT OUTER JOIN
+                (SELECT cid, VALUE AS c_secondary_pic FROM company_profile_values WHERE fid=74) AS temp26
+                ON temp25.cid = temp26.cid) AS temp31
+                LEFT OUTER JOIN
+                (SELECT p.value AS cid, p.uid AS uid FROM profile_values p WHERE  p.fid = 1) AS temp32
+                ON temp31.cid = temp32.cid) AS temp27
+                LEFT OUTER JOIN           
+                (SELECT company_id, category1, category2, contribution_pai_to_wc_date, contribution_status,
+                MAX(contribution_paid_toB1G1) AS contribution_last_date, COUNT(company_id) AS time_of_donation, MIN(contribution_paid_toB1G1) AS contribution_first_date FROM contribution
+                WHERE contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' 
+                GROUP BY company_id) AS temp29
+                ON temp27.cid = temp29.company_id) AS c";
+    $sql = "SELECT * FROM ". $company. ", users_roles As r WHERE c.cid  =".$_GET['companyID']. " AND r.uid = c.uid AND (r.rid = 6 OR r.rid = 9 OR r.rid = 13 OR r.rid = 14 OR r.rid = 15)";
+  //echo 'sql= '.$sql;
+    $result = db_query($sql);
+//    echo 'result= '.$result;
+    //$html .= '<form name="becomeFan" method="post" action ="?q=/giving"/>';
+
+    $html = $html.'<table width="700px" class="listing">';
+
+    while ($data = db_fetch_object($result)) {
+        //echo $data;
+        $sql2 = "SELECT uid FROM profile_values WHERE fid = 1 AND value=".$data->cid;
+//        echo 'sql2= '.$sql2;
+        $result2 = db_query($sql2);
+        $user = db_result($result2);
+        $last_giving = date("d/m/Y",$data->contribution_last_date);
+        if($last_giving == '01/01/1970') {
+            $last_giving = '';
+        }
+        $first_giving = date("d/m/Y",$data->contribution_first_date);
+        //$member_since_date = strtotime($data->member_since);
+		$member_since_date = db_result(db_query('SELECT  `created`  FROM  `users`  WHERE  `uid` ="'.$data->uid.'" LIMIT 1'));
+        $member_since = date("d/m/Y", $member_since_date);
+        $pic_url = $data->c_logo;
+        if($pic_url == 'N' || $pic_url == NULL || $pic_url == '') {
+            $pic_url = 'blank_image.png';
+        }
+
+
+        $dgilgi_temp = get_dgilgi_formatted($data);
+        $picture_strings = prepare_dgilgi_pic_string($dgilgi_temp['supported_giving']);
+        $picture_string['pic3'] = '<img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url.'" class="resizeme1" />';
+//width="142" height="100"
+
+        $html .= '<tr>
+                  <td width="150" rowspan="2" valign ="top" align="center" style="padding-bottom:1.5ex"><img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url.'" class="resizeme1"  /><br />';
+        //$html .= '<input type="submit" value="BECOME A FAN" class="form-submit" /> </form></td>'; width="142" height="100"
+        $html .= '<th bgcolor="#F7F7F7" valign="top" width="420px"><font color="#232323"><font size="3.1em">'.$data->c_name.'</font></font></th>
+                  <th bgcolor="#F7F7F7" valign="top" width="100px">';
+        if($user == $current_user) {
+            $html .= '<form name="edit" method="post" action ="?q=user/'.$user.'/edit/Company Profile Information">
+                  <div style="font-size: 11pt; color: #DC6E02; font-weight:bold;">
+                  <input type="submit" value="EDIT" class="form-submit" />
+                  </div></form>';
+        }
+        $html .= '</th></tr>';
+		
+		
+		
+        $html .= '<tr valign="top">
+                    <td width="350px">'.$data->c_mission.'</td>
+                    <td width="170px" colspan="2">
+                        <font color="#999999">Last Giving:</font> <font color="#666666">'.$last_giving.'</font><br />
+                        <font color="#999999">Member Since:</font> <font color="#666666">'.$member_since.'</font><br />';
+
+        $certified_sql = 'SELECT value FROM company_profile_values cpv WHERE fid = 207 AND cid ='.$data->cid;
+        $certified_result = db_query($certified_sql);
+        $certified = db_result($certified_result);
+        if($certified == 1) {
+            $html .= '<a href="" style="color:#11A1F4"
+                      title="\'Certified Giver\' status is given to BusinessesThatGive Members who have been giving regularly long-term through B1G1 Giving"
+                                                                onClick="return false">
+                     <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/icon/BusinessesThatGive_ProfileImage.png" />
+                      </a>';
+        }
+        $html .='   </td>
+                  </tr>';
+
+
+        $html .= '</table>';
+
+        /*
+         *  Company Html
+        */
+
+        $org .= '<table width="700px" class="listing"><tbody valign="top">';
+
+
+        $org .= '<tr><td width="150px" valign="top" >
+            <table class="listing">';
+        $pic_url = $data->c_primary_pic;
+        $pic_url2 = $data->c_secondary_pic;
+
+        $sql3 = "SELECT value FROM company_profile_values WHERE fid = 75 AND cid=".$data->cid;
+        $result3 = db_query($sql3);
+        $pic_url3 = db_result($result3);
+        if($pic_url == 'N' || $pic_url == NULL || $pic_url == '') {
+            $pic_url = 'default_image_BTG_profile.jpg';
+        }
+        if($pic_url2 == 'N' || $pic_url2 == NULL || $pic_url == '') {
+            $pic_url2 = 'default_image_BTG_blank.jpg';
+        }
+
+        $org .= '<tr><td valign="top" style="padding-bottom:0.5ex">
+                     <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url.'" class="resizeme1"  /></td></tr>';  //width="142" height="100"
+        $org .= '<tr><td valign="top" style="padding-bottom:0.5ex">
+                     <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url2.'"  class="resizeme1"/></td></tr>'; //width="142" height="100"
+//        $org .= '<tr><td valign="top" style="padding-bottom:0.5ex">
+//                     <img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/company/'.$pic_url3.'" width="142" height="100" /></td></tr>';
+
+        $org .= '<tr><td></td></tr></table>';
+
+        $org .= '</td><td width="550px" valign="top">';
+        $org .= '<table width="100%" class="listing">
+                 <tbody valign="bottom">';
+        $c_about = $data->c_about;
+
+        if($c_about == 'NULL') {
+            $c_about = 'Please see our website or contact us for more information';
+        }
+        $org .= '<tr><td colspan="2" style="padding-top:0.5ex; border-bottom:1px solid #232323;"><font color="#666666" size="3.1em">'."About the company: ".$data->key_org_name.'</font></td></tr>';
+        $org .= '<tr>';
+        $country_sql = "SELECT DISTINCT iso, name FROM {company_profile_values} c, {profile_location_country} pc WHERE c.fid=51 AND c.value = iso";
+        $country_result = db_query($country_sql);
+        while ($iso = db_fetch_object($country_result)) {
+            if($iso->iso == $data->c_country ) {
+                $country = $iso->name;
+            }
+        }
+        if ($data->c_phone == '' || $data->c_phone == 'N' || $data->c_phone == NULL) {
+            $data->c_phone = 'N/A';
+        }
+        $org .= '   <td width="65%"><font color="#999999">Country: </font><font color="#666666">'.$country.'</font></td>
+                    <td width="35%"><font color="#999999">Phone: </font><font color="#666666">'.$data->c_phone.' </font></td>
+                 </tr>
+                 <tr>';
+        if($data->c_industry != '' && $data->c_industry != NULL) {
+            $industry = $data->c_industry;
+            if(is_numeric($industry[0])) {
+                $industry = profile_location_get_industry($data->c_industry);
+            }else {
+                $industry = $data->c_industry;
+            }
+        }
+
+        //find new industry
+        $industry1 = db_result(db_query("select value from company_profile_values where cid = ".$data->cid." and fid = 307;"));
+        $industry2 = db_result(db_query("select value from company_profile_values where cid = ".$data->cid." and fid = 309;"));
+
+        //get the value of industry1
+        $cat1 = db_result(db_query("select category_name from lg_individual_keyword_matching where category_id = ".$industry1."")) ;
+        $cat2 = db_result(db_query("select category_name from lg_individual_keyword_matching where category_id = ".$industry2."" ));
+
+       
+        $org .= '   <td width="65%"><font color="#999999">Industry: </font><font color="#666666">'.$industry1.'<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; '.$industry2.'</font></td>';
+        $org .= '<td width="35%" rowspan="2">';
+        $facebook = $data->c_facebook;
+        $twitter = $data->c_twitter;
+        if ($twitter != NULL) {
+            if ((strpos($twitter,'http://') !== false) || (strpos($twitter,'https://') !== false)) {
+				$org .= '<a href="'.$twitter.'" target="_blank"><img width="35" height="35" alt="twitter" src="/buy1give1/images/twitter-icon.png" /></a>';
+			}else {
+				$org .= '<a href="http://'.$twitter.'" target="_blank"><img width="35" height="35" alt="twitter" src="/buy1give1/images/twitter-icon.png" /></a>';
+			}
+        }
+        if ($facebook != NULL) {
+			if ((strpos($facebook,'http://') !== false) || (strpos($facebook,'https://') !== false)) {
+				$org .= '<a href="'.$facebook.'" target="_blank"><img width="35" height="35" alt="facebook" src="/buy1give1/images/facebook-icon.png" /></a>';
+			}else{
+            	$org .= '<a href="http://'.$facebook.'" target="_blank"><img width="35" height="35" alt="facebook" src="/buy1give1/images/facebook-icon.png" /></a>';
+			}
+        }
+		if($data->c_email){
+        $org .=' <a href="javascript:void(0);" id="emailMe"><img width="35" height="35" alt="email" src="/buy1give1/images/email-icon.png" alt="email" /></a>';
+		}
+                   
+        $org .= '</td></tr>
+                 
+                 <td width="65%"><font color="#999999">Website: </font><a href="http://'.$data->c_website.'"  target="_blank">
+				 '.$data->c_website.'</a></td>
+                 </tr>
+                 <tr>
+                 <td colspan="2">'.$c_about.'</td>
+                 </tr>
+                 <tr>
+                 <td colspan="2">&nbsp;</td>
+                 </tr>
+                 </tbody></table></td></tr></table>';
+        $org .= '<table class="listing">';
+        $org .= '<tr>';
+        $org .= '<td valign="top">';
+        $org .= '<table>';
+        $org .= '<tr><td valign="top" align="center" style="border:0px solid #DED3B0;">' . $picture_string['pic3'] . '</td></tr>';
+        $org .= '<tr><td valign="top" align="center" style="border:0px solid #DED3B0;">' . $picture_strings['pic1'] . '</td></tr>';
+        $org .= '<tr><td valign="top" align="center" style="border:0px solid #DED3B0;">' . $picture_strings['pic2'] . '</td></tr>';
+        $org .= '<tr height="330px"><td valign="bottom"><img width="140" height="110" alt="leverage" src="/buy1give1/images/leverage_mini.png" /></td></tr>';
+        $org .= '</table>';
+        $org .='</td>';
+        $org .= '<td width="550px" >' . $dgilgi_temp['html_display'] . '</td>';
+        $org .= '</tr>';
+        $org .= '</table>';
+		
+		if($data->c_email){
+		$org .='<div id="thankyougiving" style="display:none;"> <a href="javascript:void(0);"><img width="63" height="20" style="left: 310px;position: relative;" id="close_thankyougiving" class="close" src="https://www.b1g1.com/givinglife/images/close.jpg"></a>
+  <div class="thanku-left" style="padding-top:10px;width: auto;">
+   <div style="font-size:21px;" align="center">Send a message</div>
+  </div>
+  <div class="cata-box_thanks" style="position:inherit; background:none;border: 0 none;">
+         <div class="cata-detail">'.drupal_get_form(contactFrm_form).'
+         </div>
+    </div>   
+</div>';
+		$org .= '<script>
+$(document).ready(function(){
+	$("#switch_edit-message").hide();
+	 $("#thankyougiving").dialog({
+					modal: true,
+					autoOpen: false,
+					closeText: "close me",
+					resizable: false,
+					width: 550,	
+					height: 425,				
+				});	
+							
+				$("#emailMe").click(function(){					
+					$("#thankyougiving").dialog("open");					
+				});
+				$("#close_thankyougiving").click(function(){					
+					$("#thankyougiving").dialog("close");					
+				});
+				
+	
+});
+		</script>';
+		}
+    }
+
+    $org .= "</tbody></table><br />";
+    return $html.$org;
+}
+function contactFrm_form(){
+	$getCompanyEmail = db_result(db_query('SELECT VALUE AS c_email FROM company_profile_values WHERE fid=41 AND cid = "'.$_GET['companyID'].'" LIMIT 1'));
+$form['#attributes'] = array('enctype' => "multipart/form-data");
+			 $form["name"] = array("#type" => "textfield",
+			  "#title" => t("Your name"),
+			  "#maxlength" => 255,
+			  "#default_value" => "",
+			  "#required" => TRUE,
+			);
+			$form["mail"] = array("#type" => "textfield",
+			  "#title" => t("Your e-mail address"),
+			  "#maxlength" => 255,
+			  "#default_value" =>"",
+			  "#required" => TRUE,
+			);
+			$form["mailto"] = array("#type" => "hidden",
+			  "#maxlength" => 255,
+			  "#default_value" => $getCompanyEmail,
+			  "#required" => TRUE,
+			);
+			$form["subject"] = array("#type" => "textfield",
+			  "#title" => t("Subject"),
+			  "#maxlength" => 255,
+			  "#required" => TRUE,
+			);
+			$form["message"] = array("#type" => "textarea",
+			  "#title" => t("Message"),
+			  "#required" => TRUE,
+			  "#cols" => 56,
+			   "#resizable" => false,
+			  '#attributes' => array('class' => 'mceNoEditor'),
+			);
+			$form["submit"] = array("#type" => "submit",			 
+              "#value" => t("SUBMIT"),
+			);
+			return $form;
+}
+function contactFrm_form_validate($form, &$form_state){
+	/*echo '<pre>';
+	print_r($form);
+	echo '<pre>';
+	print_r($form_state);
+	die();*/
+	$validMail = $form_state['values']['mail'];
+	if(!valid_email_address($validMail)) {
+        form_set_error('mail',t('The email %mail is not a valid email address.',array('%mail' => $validMail)));
+    }
+}
+function contactFrm_form_submit($form, &$form_state){
+	$mailto =$form_state['values']['mailto'];
+	$from = $form_state['values']['name'].' <'.$form_state['values']['mail'].'>';
+	/*$values['subject'] = $form_state['values']['subject'];
+	$values['message'] = $form_state['values']['message'];
+	$values['message']  .= "\n\nSubmitted by: ". $form_state['values']['name'] ."\n\nEmail: ".$form_state['values']['mail'];*/
+	$message1 = '<pre>This message was sent to you via the B1G1 (Buy1GIVE1) Website - www.b1g1.com </pre>
+			<p>...............................</p>
+			<p>'.$form_state['values']['message'].'</p>
+			<p>Submitted by: '. $form_state['values']['name'] .'</p>
+			<p>Email: '.$form_state['values']['mail'].'</p>
+			<p>...............................</p>
+			<pre>To see your profile info on the B1G1 site, click the link below:</pre>
+<pre>http://www.buy1give1.info/buy1give1/businessstory?companyID='.$_GET['companyID'].'</pre>';
+	//drupal_mail('contact', 'page_mail', $mailto, language_default(), $values, $from);
+	// To send HTML mail, the Content-type header must be set
+			$headers1  = 'MIME-Version: 1.0' . "\r\n";
+			$headers1 .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+			// Additional headers
+			$headers1 .= 'From: '.$form_state['values']['name'].' <'.$form_state['values']['mail'].'>' . "\r\n";
+			//$headers1 .= 'To: Pravin Sawant <pravin_sawant@eluminoustechnologies.com>To: B1G1 Info <info@b1g1.com>' . "\r\n";
+			// Mail it
+			if($form_state['values']['mailto']){
+			mail($mailto, $form_state['values']['subject'], $message1, $headers1);
+				drupal_set_message("Your message was successfully submitted");
+			}else{
+				drupal_set_message("Something is wrong with you!");
+			}
+			drupal_goto('http://www.buy1give1.info/buy1give1/businessstory?companyID='.$_GET['companyID']);			
+	
+	 
+}
+function getBusiness($wcid) {
+    $sql = "SELECT * FROM {project} p WHERE p.wcid = ".$wcid;
+    $result = db_query($sql);
+    $pager_num = 0;
+    $result = pager_query($sql, 5, $pager_num, NULL);
+
+    $html = '<h5 style="color:#4D4D4D">Other projects from this organisation:</h5>
+        <table class="listing"><tbody valign="top">';
+
+    while($data = db_fetch_object($result)) {
+        $html = $html.'<tr><td>
+        <a href="?q=projectstory&projectID='.$data->projID.'&wcID='.$data->wcid.'">
+        <img src="'.$data->pic1URL.'" width="142" height="100"/></a>
+        </td><td>
+        <table width="700px" class="listing"><tbody valign="top">
+        <tr style="padding-bottom:1ex">
+        <th bgcolor="#F7F7F7" width="500px" align="left"><a href="?q=projectstory&projectID='.$data->projID.'&wcID='.$data->wcid.'">
+        <font size="3.1em" color="#DC6E02">'.$data->proj_title.'</font></a>'.
+                '</th><th bgcolor="#F7F7F7" width="150px"><font color="#999999">USD </font>
+        <font size="3.1em" color="#11A1F4"> $ '.$data->proj_cost_USD.'</font>'.
+                '</th><th bgcolor="#F7F7F7" width="50px">'.
+                '<form action ="?q=giving" method = "post">
+        <input type="hidden" name="organization" value="'.$data->proj_org_name.'" />
+        <input type="hidden" name="project" value="'.$data->proj_title.'" />
+        <input type="hidden" name="pvalue" value="'.$data->proj_cost_USD.'" />
+        <input type="hidden" name="wcid" value="'.$data->wcid.'" />
+        <input type="hidden" name="impactunit" value="'.$data->impact_unit.'" />
+        <input type="hidden" name="projectID" value="'.$data-8>projID.'" />
+        <div style="font-size: 11pt; color: #DC6E02; font-weight:bold;">
+        <input class="form-submit" type ="submit" value="GIVE"></input>
+        </div>
+        </form>
+        </th></tr>
+        <tr ><td width="500px" align="left" valign="top">
+        '.substr($data->proj_story,0,130).'...<a href="?q=projectstory&projectID='.$data->projID.'&wcID='.$data->wcid.'"><b>MORE INFO</b></a>
+        </td><td valign="top" width="200px" colspan="2">
+        <b><font color="#999999">Country: </font><font color="#75C6EB">'.$data->proj_country.'</font></b><br />
+        <b><font color="#999999">Category: </font><font color="#75C6EB">'.$data->proj_catID_1.'</font></b><br />
+        <b><font color="#999999">Beneficiary: </font><font color="#75C6EB">'.$data->proj_beneficiary_ID_1.
+                '</font></b></td></tr></table>
+        </td></tr><tr><td></td><td></td></tr>';
+    }
+
+    $html = $html.'</tbody></table>';
+
+    // Add links to remaining pages of results.
+    return $html.theme('pager', NULL, 10, $pager_num);
+}
+
+function get_dgilgi_formatted(&$data) {
+    $uid = get_uid_givng_cid($data->cid);
+    $dgilgi_manager = new DGILGI_Manager($uid);
+	//$populate_tree = $dgilgi_manager->populate_tree($uid);
+//echo '<pre>'; print_r($dgilgi_manager->lgi_summary_arr);
+   $dgi_summary_string = $dgilgi_manager->get_lgi_or_dgi_summary_string($dgilgi_manager->dgi_summary_arr, $dgilgi_manager->dgi_growth_rate_arr, $dgilgi_manager->dgi_monthly_avg_arr);
+    $lgi_summary_string =  $dgilgi_manager->get_lgi_or_dgi_summary_string($dgilgi_manager->lgi_summary_arr, $dgilgi_manager->lgi_growth_rate_arr,  $dgilgi_manager->lgi_monthly_avg_arr);
+    $view_more_links = array(
+            0 => '<br/><a href="?q=dgi_lgi/view_all_causes&target_id=' . $data->cid . '&c_name=' . $data->c_name . '" style="font-weight:normal">View more >></a>',
+            1 => '<a href="?q=dgi_lgi/view_all_dg&target_id=' . $data->cid . '&c_name=' . $data->c_name . '" style="font-weight:normal">View more >></a>',
+            2 => '<a href="?q=dgi_lgi/view_all_lg&target_id=' . $data->cid . '&c_name=' . $data->c_name . '" style="font-weight:normal">View more >></a>',
+    );
+    $supported_causes = $dgilgi_manager->get_supported_causes_string();
+    $html .= '<table class="listing">';
+    $html .= "<tr><td colspan='2' style='padding-top:0.5ex; border-bottom:1px solid #232323;'><font color='#666666' size='3.1em'>Giving activities:</font></td></tr>";
+    $html .= "<tr valign='top'><td style='color:#999999;font-weight:normal;'> Supported causes:</td><td style='color:#666666;font-weight:normal;'>" . $supported_causes . ((strcmp($supported_causes, '-') != 0) ? $view_more_links[0] : '')  . "</td></tr>";
+    $html .= "<tr><td style='color:#999999;font-weight:normal;'> Last giving activity:</td><td style='color:#666666;font-weight:normal;'>" . $dgilgi_manager->get_last_activity_string() . "</td></tr>";
+    $html .= "<tr><td style='color:#999999;font-weight:normal;'> Direct giving impact:</td><td style='color:#666666;font-weight:normal;'>" . $dgilgi_manager->get_dgi_string() . " <font style='color:#666666;'>micro-giving impacts</font></td></tr>";
+    $html .= "<tr><td style='color:#999999;font-weight:normal;'> Leveraged giving impact:</td><td style='color:#666666;font-weight:normal;'>" . $dgilgi_manager->get_lgi_string() . " <font style='color:#666666;'>micro-giving impacts</font></td></tr>";
+	
+    $html .= "<tr><td style='color:#999999;font-weight:normal;'> Leadership:</td><td style='color:#666666;font-weight:normal;'>Inspired <font style='color:#666666;'>" . get_total_num_of_companies_string($uid,0) . "</font> others to give</td></tr><tr><td>&nbsp;</td></tr>";
+	//$dgilgi_manager->get_num_of_companies_string()
+    $html .= "</table>";
+
+    $html .= "<table bgcolor='#F2F2F2'>";
+    $html .= "<tr>";
+    $html .= "<td colspan='2'><h5 style='color:#232323'>&nbsp;Direct Giving Impact Summary (DGI):</h5></td>";
+    $html .= "<td><h5 style='color:#232323 '>Monthly Average:</h5></td>";
+    $html .= "</tr>";
+    $html .= $dgi_summary_string['toString'];
+    $html .= (!$dgi_summary_string['isEmpty']) ? "<tr><td colspan='3' align='right'>" . $view_more_links[1] . "&nbsp;&nbsp;&nbsp;</td></tr>" : "";
+    $html .= "</table>";
+	
+	//check this users role.If it is b1g1 member then do not show LGI graph.
+	
+	$check_role_sql = "select rid from users_roles where uid=".$uid;
+	$result = db_query($check_role_sql);
+	$role =  db_result($result);
+	//$html .= "<br/>Role = ".$role."<br/>" ;
+	if(in_array($role,array(6,9,14,15)))
+	{
+		$html .= "<table bgcolor='#F2F2F2'>";
+		$html .= "<tr><td><h5 style='color:#232323'>&nbsp;Leveraged Giving Impact Summary (LGI):</h5></td></tr>";
+		$html .= "<tr>";
+		$html .= '<td><object id="LGIGraphWidgetSWF" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="530" height="300">
+	<param name="movie" value="http://www.b1g1.com/LGIGraph/B1G1LGIWidget.swf?id='.$data->cid.'"></param>
+	<param name="allowscriptaccess" value="always"></param>
+	<embed src="http://www.buy1give1.info/LGIGraph/B1G1LGIWidget.swf?id='.$data->cid.'" type="application/x-shockwave-flash" allowscriptaccess="always" width="530" height="300"></embed>
+	</object></td>';
+		$html .= "</tr>";
+		$html .= (!$lgi_summary_string['isEmpty']) ? "<tr><td align='right'>" . $view_more_links[2] . "&nbsp;&nbsp;&nbsp;</td></tr>" : "";
+		$html .= "</table>";
+	}//if
+	
+
+    return array('html_display' => $html, 'supported_giving' => $dgilgi_manager->support_giving_arr);
+}
+function display_all_supported_cause() {
+    $uid = get_uid_givng_cid($_GET['target_id']);
+    $dgilgi_manager = new DGILGI_Manager($uid);
+    $html .= "<table><tbody style='border-top: 0pt none;'>";
+    $html .= "<tr><td><h4>Supported causes:</h4></td></tr><tr><td style='color:#232323; font-weight:normal;'>" . $dgilgi_manager->get_supported_causes_string(TRUE) . "</td></tr>";
+    $html .= "</tbody></table>";
+    $html .= '<a href="?q=businessstory&companyID=' . $_GET['target_id'] . '" style="font-weight:bold">&nbsp;&nbsp;<< Go Back</a>';
+    return $html;
+}
+
+function display_all_dg() {
+    $uid = get_uid_givng_cid($_GET['target_id']);
+    $dgilgi_manager = new DGILGI_Manager($uid);
+	/*echo '<pre>';
+	print_r($dgilgi_manager);
+	die();*/
+    $dgi_summary_string = $dgilgi_manager->get_lgi_or_dgi_summary_string($dgilgi_manager->dgi_summary_arr, $dgilgi_manager->dgi_growth_rate_arr, $dgilgi_manager->dgi_monthly_avg_arr, TRUE);
+    $html .= "<table><tbody style='border-top: 0pt none;'>";
+    $html .= "<tr><td>&nbsp;</td></tr><tr>";
+    $html .= "<td colspan='2'><h5 style='color:#232323'>Direct Giving Impact Summary (DGI1234):</h5></td>";
+    $html .= "<td><h5 style='color:#232323'>Monthly Average:</h5></td>";
+    $html .= "</tr>";
+    $html .= $dgi_summary_string['toString'];
+    $html .= (!$dgi_summary_string['isEmpty']) ? "<tr colspan='2'><td>" . $view_more_links[1] . "</td></tr>" : "";
+    $html .= "</tbody></table>";
+    $html .= '<a href="?q=businessstory&companyID=' . $_GET['target_id'] . '" style="font-weight:bold"><< Go Back</a>';
+    return $html;
+}
+
+function display_all_lg() {
+    $uid = get_uid_givng_cid($_GET['target_id']);
+    $dgilgi_manager = new DGILGI_Manager($uid);
+    $lgi_summary_string = $dgilgi_manager->get_lgi_or_dgi_summary_string($dgilgi_manager->lgi_summary_arr, $dgilgi_manager->lgi_growth_rate_arr,  $dgilgi_manager->lgi_monthly_avg_arr, TRUE);
+    $html .= "<table><tbody style='border-top: 0pt none;'>";
+    $html .= "<tr><td>&nbsp;</td></tr><tr>";
+    $html .= "<td colspan='2'><h5 style='color:#232323'>Leveraged Giving Impact Summary (DGI):</h5></td>";
+    $html .= "<td><h5 style='color:#232323'>Monthly Average:</h5></td>";
+    $html .= "</tr>";
+    $html .= $lgi_summary_string['toString'];
+    $html .= (!$lgi_summary_string['isEmpty']) ? "<tr colspan='2'><td>" . $view_more_links[2] . "</td></tr>" : "";
+    $html .= "</tbody></table>";
+    $html .= '<a href="?q=businessstory&companyID=' . $_GET['target_id'] . '" style="font-weight:bold"><< Go Back</a>';
+    return $html;
+}
+
+
+function display_all_title_callback($arg) {
+    return $arg . $_GET['c_name'];
+}
+
+function get_uid_givng_cid($cid) {
+    $result = db_query("SELECT {pv.uid} FROM profile_values pv, users_roles ur WHERE fid=1 AND pv.uid = ur.uid AND (rid = 3 OR rid = 6 OR rid = 9 OR rid = 13 OR rid = 14 OR rid = 15) AND VALUE=%d", $cid);
+    return db_result($result);
+}
+
+function prepare_dgilgi_pic_string($arr) {
+    $pic_addresses = array();
+    $i=0;
+    foreach($arr as $row) {
+        $i++;
+        $pic_addresses['pic' . $i] = '<img src="http://'.$_SERVER["SERVER_NAME"].'/buy1give1/sites/default/files/project/'.$row['pic'].'" width="142" height="100"/></a>';
+        if($i > 3) break;
+    }
+    return $pic_addresses;
+}
+
+function get_num_of_br($num) {
+    $toString = '';
+    for($i = 0; $i < $num; $i++) {
+        $toString .= '<br/>';
+    }
+    return $toString;
+}
+function get_total_num_of_companies_string($userId, $totalCnt) {
+	global $totalCnt;
+        $sql = "SELECT invitee FROM invite_relations i WHERE i.uid='".$userId."'";
+		$result = mysql_query($sql);
+		$count = mysql_num_rows($result);
+		$totalCnt = $totalCnt + $count;
+		while($row = mysql_fetch_assoc($result)) {          
+		  get_total_num_of_companies_string($row['invitee'],$totalCnt);
+       }
+	   
+	   return $totalCnt;
+	}
