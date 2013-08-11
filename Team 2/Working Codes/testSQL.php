@@ -52,7 +52,8 @@ if (mysqli_connect_errno($con))
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
   } 
   
-include "DGILGI_Manager.php";
+// Commenting out DGI LGI Manager as no longer in use.
+// include "DLGI_Manager.php";
 
 //Execute the SQL if type is a Business
 if($type=='biz')
@@ -146,8 +147,9 @@ if($type=='biz')
 			echo "<Br/><u>Supported Causes</u>";
 			echo "<Br/>";
 		while($row = mysqli_fetch_array($result)){
-			echo "<Br/>".$row['proj_org_name'];
-			echo "<Br/><img src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/".$row['pic1url']."\">";
+			echo $row['proj_org_name'].", ";
+			//echo "<Br/>".$row['proj_org_name'];
+			//echo "<Br/><img src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/".$row['pic1url']."\">";
 		}
 
 mysqli_close($con);
