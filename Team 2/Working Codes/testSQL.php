@@ -115,7 +115,41 @@ if($type=='biz')
 			echo "<Br/>";
 		}
 		
+	//  [DATA EXTRACT] Extracting the forth round of Data
+		$result = mysqli_query($con,"SELECT Industry FROM  `CC_CompanyInfo1` 
+									WHERE uid = ". $id ."
+									LIMIT 0 , 30");
+			
+
+		// Writing it out
+		while($row = mysqli_fetch_array($result)){
+			echo "<Br/>";
+			echo "<Br/>Industry : ".$row['Industry'].".";
+			echo "<Br/>";
+		}
 		
+	//  [DATA EXTRACT] Extracting the fifth round of Data
+		$result = mysqli_query($con,"SELECT p.proj_org_name, p.projID, p.pic1url
+									FROM project p
+									INNER JOIN contribution c ON p.projID = c.project_ID
+									WHERE c.contributer_ID =". $id ."
+									AND contribution_status <>  'unsuccessful'
+									AND contribution_status <>  'unconfirmed'
+									AND contribution_status <>  'cancelled'
+									GROUP BY p.proj_org_name
+									ORDER BY c.contributionID DESC 
+									LIMIT 0 , 300");
+			
+
+		// Writing it out
+			echo "<Br/>";
+			echo "<Br/><u>Supported Causes</u>";
+			echo "<Br/>";
+		while($row = mysqli_fetch_array($result)){
+			echo "<Br/>".$row['proj_org_name'];
+			echo "<Br/><img src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/".$row['pic1url']."\">";
+		}
+
 mysqli_close($con);
 }  
 ?>
