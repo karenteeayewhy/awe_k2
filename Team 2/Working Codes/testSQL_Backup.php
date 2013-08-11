@@ -23,10 +23,17 @@ img.border {
 		}
 -->
 </style>
-<span class="style1">Company Information</span>
+<br /><p><span class="style1">Company Information</span></p>
+
+
 <?php
+
+
+
 $id=$_GET["id"];
 $type=$_GET["type"];
+
+
 
 // Create connection to the b1g1 database
 //$con=mysql_connect("localhost","fareslay","97697932",true) or 
@@ -59,28 +66,21 @@ if($type=='biz')
 		CC_CompanyInfo.uid=profile_values.uid WHERE CC_CompanyInfo.uid=" . $id . " AND profile_values.fid=59");
 
 
+		// Writing it out into a table.
+		echo "<table border='0' a>";
+
 		while($row = mysqli_fetch_array($result))
 		  {
-		  echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\"><Br/>";
-		  echo "Company Name : " . $row['company_name'] . "<Br/>";
-		  echo "Joined Date : " . $row['JoinedDate'] . "<Br/>";
-		  //echo "Latest Contribution Date : " . $row['Latest_Contribution_date'] . "<Br/>";
-		  echo "Total Giving Amount : " . $row['TotalGivingAmount'] . "<Br/>";
+		  echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\"></td>";
+		  echo "<td align=right>Company Name : </td><td>" . $row['company_name'] . "</td></tr>";
+		  echo "<tr><td align=right>Joined Date : </td><td>" . $row['JoinedDate'] . "</td></tr>";
+		  echo "<tr><td align=right>Latest Contribution Date : </td><td>" . $row['Latest_Contribution_date'] . "</td></tr>";
+		  echo "<tr><td valign=top align=right>Total Giving Amount : </td><td valign=top>" . $row['TotalGivingAmount'] . "</td></tr>";
 		  }
+		echo "</table>";
 		// echo "<a href=\"#\" onclick=\"window.open(\'https://www.facebook.com/sharer/sharer.php?u=\'+encodeURIComponent(location.href), \'facebook-share-dialog\', \'width=626,height=436\'); return false;\"><br><img src=\"FB.png\" width=\"109\" height=\"25\"></a> <a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-lang=\"en\"><img src=\"TW.png\" width=\"109\" heigt\"25\"> </a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"https://platform.twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}";
 	
-	//  [DATA EXTRACT] Extracting the Country Data 
-		$result = mysqli_query($con,"SELECT c.name AS countryname
-										FROM profile_location_country c
-										INNER JOIN profile_values p ON c.iso = p.value
-										WHERE p.uid =". $id ."
-										LIMIT 0 , 30");
 	
-		// Writing it out
-		while($row = mysqli_fetch_array($result)){
-			echo "Country : ".$row['countryname']."<Br/>";	
-		}
-		
 	//  [DATA EXTRACT] Extracting the second round of Data
 		$result = mysqli_query($con,"SELECT p.project_phrase_active, c.noofbeneficiaries AS amt, DATE_FORMAT( FROM_UNIXTIME( c.contribution_paid_tob1g1 ) ,  '%D %M %Y' ) AS last_giving_date
 									FROM project p
@@ -96,8 +96,9 @@ if($type=='biz')
 
 		// Writing it out into a table.
 		while($row = mysqli_fetch_array($result)){
+			echo "<br/>";
 			echo "Last Giving Date : ".$row['last_giving_date']."<Br/>";
-			echo "Latest Activity : ".$row['amt']." ".$row['project_phrase_active'].".<Br/>";
+			echo "<Br/>Latest Activity : ".$row['amt']." ".$row['project_phrase_active'].".";
 		}
 		
 	//  [DATA EXTRACT] Extracting the third round of Data
@@ -110,7 +111,8 @@ if($type=='biz')
 
 		// Writing it out into a table.
 		while($row = mysqli_fetch_array($result)){
-			echo "Direct Giving Impact : ".$row['dgi']." beneficiaries impacted.";
+			echo "<Br/>";
+			echo "<Br/>Direct Giving Impact : ".$row['dgi']." beneficiaries impacted.";
 			echo "<Br/>";
 		}
 		
@@ -122,7 +124,9 @@ if($type=='biz')
 
 		// Writing it out
 		while($row = mysqli_fetch_array($result)){
-			echo "Industry : ".$row['Industry']."<Br/>";
+			echo "<Br/>";
+			echo "<Br/>Industry : ".$row['Industry'].".";
+			echo "<Br/>";
 		}
 		
 	// Generate QR CODE
@@ -164,6 +168,7 @@ if($type=='biz')
 									ORDER BY c.contributionID DESC 
 									LIMIT 0 , 300");
 			
+
 		// Writing it out
 			echo "<Br/>";
 			echo "<Br/><u>Supported Causes</u>";
@@ -174,8 +179,6 @@ if($type=='biz')
 			//echo "<Br/><img src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/".$row['pic1url']."\">";
 		}
 
-
-		
 mysqli_close($con);
 }  
 ?>

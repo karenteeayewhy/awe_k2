@@ -59,16 +59,16 @@
 
 //Locations to be mapped and inputting the codes. [4] is the ID , [5] is the type of marker
     var locations = [
-      ['Astla Technology', -33.890542, 151.274856, 4, '560', 'biz'],
-      ['Green Syndrome Inc', -33.923036, 151.259052, , 5, '560', 'biz'],
-      ['Balance Central', -34.028249, 151.157507, 3, '560', 'biz'],
-      ['Green Syndrome Inc', -33.80010128657071, 151.28747820854187, 2, '560', 'biz'],
-      ['Balance Central', -33.950198, 151.259302, 1, '560', 'biz']
+      ['Astla Technology', 1.316811, 103.845177, 4, '560', 'biz'],
+      ['Green Syndrome Inc', 1.354507, 103.881912, , 5, '560', 'biz'],
+      ['Balance Central', 1.351075, 103.752136, 3, '560', 'biz'],
+      ['Green Syndrome Inc', 1.343524, 103.761749, 2, '560', 'biz'],
+      ['Balance Central', 1.278996, 103.837967, 1, '560', 'biz']
     ];
 
     var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 10,
-      center: new google.maps.LatLng(-33.92, 151.25),
+      zoom: 11,
+      center: new google.maps.LatLng(1.361372, 103.822861),
       mapTypeId: google.maps.MapTypeId.ROADMAP
     });
 
