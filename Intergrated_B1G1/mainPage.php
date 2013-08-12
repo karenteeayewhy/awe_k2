@@ -95,8 +95,10 @@
 						
 						//andrew function please work...
 						//Execute SQL
-						 var results = displayInfo(val.uid,'biz');
-						 document.getElementById('tempdiv').innerHTML = results;
+						 //var results = displayInfo(val.uid,'biz');
+						 //document.getElementById('tempdiv').innerHTML = results;
+						 
+						 displayInfo(val.uid,'biz');
 						
 							} // return function 
 							})	(marker));  
@@ -159,6 +161,13 @@
 					
 					}); //get JSON 2
 					
+						//andrew function please work...
+						//Execute SQL
+						// var results = displayInfo1(val.projid,'proj');
+						// document.getElementById('tempdiv').innerHTML = results;
+						
+						displayInfo1(val.projid,'proj');
+					
 						} // return function 
 						})	(marker));  
 					}); //for each
@@ -219,6 +228,13 @@
 					
 					}); //get JSON 2
 					
+					    //andrew function please work...
+						//Execute SQL
+						// var results = displayInfo(val.uid,'biz');
+						// document.getElementById('tempdiv').innerHTML = results;
+						
+						displayInfo2(val.Wcid,'worthy');
+					
 						} // return function 
 						})	(marker));  
 					}); //for each
@@ -245,6 +261,52 @@
 								}
 							}
 								xmlhttp.open("GET","CompanyInformation.php?id="+id+"&type="+type,true);
+								xmlhttp.send();	
+			}
+			
+			//please work - sending info over
+			function displayInfo1(id,type) {
+				var xmlhttp;
+					if (window.XMLHttpRequest)
+						 {// code for IE7+, Firefox, Chrome, Opera, Safari
+							 xmlhttp=new XMLHttpRequest();
+						 }
+					else
+						{// code for IE6, IE5
+						    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+						}
+							xmlhttp.onreadystatechange=function()
+							{
+								if (xmlhttp.readyState==4 && xmlhttp.status==200)
+								{
+									//document.getElementById("tempdiv").innerHTML=xmlhttp.responseText;
+									document.getElementById("tempdiv").innerHTML=xmlhttp.responseText;
+								}
+							}
+								xmlhttp.open("GET","ProjectsInfomation.php?id="+id+"&type="+type,true);
+								xmlhttp.send();	
+			}
+			
+			//please work - sending info over
+			function displayInfo2(id,type) {
+				var xmlhttp;
+					if (window.XMLHttpRequest)
+						 {// code for IE7+, Firefox, Chrome, Opera, Safari
+							 xmlhttp=new XMLHttpRequest();
+						 }
+					else
+						{// code for IE6, IE5
+						    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+						}
+							xmlhttp.onreadystatechange=function()
+							{
+								if (xmlhttp.readyState==4 && xmlhttp.status==200)
+								{
+									//document.getElementById("tempdiv").innerHTML=xmlhttp.responseText;
+									document.getElementById("tempdiv").innerHTML=xmlhttp.responseText;
+								}
+							}
+								xmlhttp.open("GET","WorthyInformation.php?id="+id+"&type="+type,true);
 								xmlhttp.send();	
 			}
 	
@@ -284,7 +346,8 @@
     </div>
 		</td>
   <td width="440" valign="top"><br>
-    <div class="style2 style3" id="tempdiv"> Welcome to B1G1. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantm, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugie.<br>
+    <div class="style2 style3" id="tempdiv"> 
+	Welcome to B1G1. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantm, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugie.<br>
         <br>
     Ed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora. <br>
         <br>
