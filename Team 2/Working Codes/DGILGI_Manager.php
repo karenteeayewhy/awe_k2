@@ -64,7 +64,7 @@ class DGILGI_Manager {
                 "WHERE c.contributer_ID='".$uid."' AND contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled'  " .
                 "GROUP BY p.proj_org_name " .
                 "ORDER BY c.contributionID DESC";
-        $result = mysqli_query($con,$sql);
+        $result = mysql_query($sql);
         while ($row = mysql_fetch_object($result)) {
             $this->support_giving_arr[$row->projID] = array();
             $this->support_giving_arr[$row->projID]['name'] = $row->proj_org_name;
@@ -80,20 +80,20 @@ class DGILGI_Manager {
                 "WHERE c.contributer_ID='".$uid."' AND contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' " .
                 "ORDER BY c.contributionID DESC " .
                 "LIMIT 1";
-        $result = mysqli_query($con,$sql);
+        $result = mysql_query($sql);
         $this->last_giving_act_date = mysql_fetch_array($result);
     }
 
     function populate_num_of_companies_invited($uid) {
         $sql = "SELECT COUNT(*) FROM invite_relations i WHERE i.uid='".$uid."'";
-        $result = mysqli_query($con,$sql);
+        $result = mysql_query($sql);
 		$resultRow = mysql_fetch_row($result);
         $this->num_of_companies_invited = $resultRow[0];
     }
 
     function populate_tree($uid) {
         $this->level++;
-        $result = mysqli_query($con,"SELECT * FROM invite_relations WHERE uid='".$uid."'");
+        $result = mysql_query("SELECT * FROM invite_relations WHERE uid='".$uid."'");
         while ($row = mysql_fetch_object($result)) {
 			
             if(empty($this->lgi_tree[$row->uid])) {
@@ -112,7 +112,7 @@ class DGILGI_Manager {
     }
 
     function get_calculate_DGI($uid) {
-        $result = mysqli_query($con,"SELECT sum(c.noofbeneficiaries) FROM contribution c WHERE contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' AND contributer_id='".$uid."'");
+        $result = mysql_query("SELECT sum(c.noofbeneficiaries) FROM contribution c WHERE contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' AND contributer_id='".$uid."'");
 		$resultRow = mysql_fetch_row($result);
         return $resultRow[0];//db_result($result);
     }
@@ -137,7 +137,7 @@ class DGILGI_Manager {
                 "INNER JOIN contribution c ON p.projID=c.project_ID " .
                 "WHERE c.contributer_ID='".$uid."' AND contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' " .
                 "GROUP BY p.impact_category";
-        $result = mysqli_query($con,$sql);
+        $result = mysql_query($sql);
         while ($row = mysql_fetch_object($result)) {
             if(empty($dst[$row->impact_category])) {
                 $dst[$row->impact_category] =
@@ -171,7 +171,7 @@ class DGILGI_Manager {
                 "WHERE c.contributer_ID='".$uid."' AND contribution_status <> 'unsuccessful' AND contribution_status <> 'unconfirmed' AND contribution_status <> 'cancelled' " .
                 "GROUP BY mth, p.impact_category " .
                 "ORDER BY c.contributer_ID, p.impact_category, mth ASC";
-        $result = mysqli_query($con,$sql);
+        $result = mysql_query($sql);
         while ($row = mysql_fetch_object($result)) {
             $dst[$row->impact_category][$row->mth] = $row->amt;
             ksort($dst[$row->impact_category], SORT_NUMERIC);
