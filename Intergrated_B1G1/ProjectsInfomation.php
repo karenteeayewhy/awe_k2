@@ -30,40 +30,39 @@ where project_live =1 and project_approved = 1 and project_delete = 0 and projid
 		
 if(mysql_num_rows($result)==0) {
 	
-	echo "<b>The Projects information is temporary not exist. It will be updated soon. Sorry for any inconvenience caused.<b>";
-	
+		echo "<b>Error : Four Oh Four</b><br/>";	
+		echo "<b>The Project information for this item is currently being updated. Sorry for any inconvenience caused.</b>";
 } else {
 		
 		// Writing it out into a table.
-		echo "<table border='0'>";
 
 		while($row = mysql_fetch_array($result))
 		  {
 		  
 		  if($row['pic1URL']==null){
-			echo "<tr><td align=left rowspan=\"4\">&nbsp;</td>";
+			echo "&nbsp;";
 		  }		  
 		  else {
-			echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\"></td>";
+			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\">";
 		  }
 		  
-			echo "<td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  
 		  if($row['proj_title']==null){
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  }		  
 		  else {
-			echo "<tr><td align=right>Project Title :</td><td>" . $row['proj_title'] . "</td></tr>";
+			echo "<BR/>Project Title :" . $row['proj_title'] . "";
 		  }
 		  
 		  if($row['proj_country']==null){
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  }		  
 		  else {
-			echo "<tr><td align=right>Project Country :</td><td>" . $row['proj_country'] . "</td></tr>";
+			echo "<BR/>Project Country :" . $row['proj_country'] . "";
 		  }
 		  
-			echo "<tr><td valign=top align=right>&nbsp;</td><td valign=top>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  
 		 // echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\"></td>";
 		 // echo "<td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
@@ -71,7 +70,7 @@ if(mysql_num_rows($result)==0) {
 		//  echo "<tr><td align=right>Project Country :</td><td>" . $row['proj_country'] . "</td></tr>";
 		//  echo "<tr><td valign=top align=right>&nbsp;</td><td valign=top>&nbsp;</td></tr>";
 		  }
-		echo "</table>";
+
 		// echo "<a href=\"#\" onclick=\"window.open(\'https://www.facebook.com/sharer/sharer.php?u=\'+encodeURIComponent(location.href), \'facebook-share-dialog\', \'width=626,height=436\'); return false;\"><br><img src=\"FB.png\" width=\"109\" height=\"25\"></a> <a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-lang=\"en\"><img src=\"TW.png\" width=\"109\" heigt\"25\"> </a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"https://platform.twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}";
 	
 	//  [DATA EXTRACT] Extracting the projects Data 
@@ -89,7 +88,7 @@ where project_live =1 and project_approved = 1 and project_delete = 0 and projid
 				} 
 				else {
 					echo "<Br/>";
-					echo "Story : ".$row['proj_story']."<Br/>";	
+					echo "<BR/>Story : ".$row['proj_story']."<Br/>";	
 				}
 				
 				if($row['proj_catid_1']==null) {

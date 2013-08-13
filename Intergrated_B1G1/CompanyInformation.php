@@ -30,55 +30,54 @@ if($type=='biz')
 		CC_CompanyInfo.uid=profile_values.uid WHERE CC_CompanyInfo.uid=" . $id . " AND profile_values.fid=59");
 		
 if(mysql_num_rows($result)==0) {
-	
-	echo "<b>The Company information is temporary not exist. It will be updated soon. Sorry for any inconvenience caused.<b>";
+	echo "<b>Error : Four Oh Four</b><br/>";	
+	echo "<b>The Company information for this item is currently being updated. Sorry for any inconvenience caused.</b>";
 	
 } else {
 		
 		// Writing it out into a table.
-		echo "<table border='0'>";
 
 		while($row = mysql_fetch_array($result))
 		  {
 		  
 		  if($row['logoURL']==null){
-			echo "<tr><td align=left rowspan=\"4\">&nbsp;</td>";
+			echo "&nbsp;";
 		  }	
 		  
 		  else {
-			echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\"></td>";
+			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\">";
 		  }
 		  
 		   if($row['company_name']==null){
-			echo "<td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;&nbsp;";
 		  }	
 		  
 		  else {
-			echo "<td align=right>Company Name : </td><td>" . $row['company_name'] . "</td></tr>";
+			echo "<br/>Company Name : " . $row['company_name'] . "";
 		  }
 		  
 		   if($row['JoinedDate']==null){
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  }	
 		  
 		  else {
-			echo "<tr><td align=right>Joined Date : </td><td>" . $row['JoinedDate'] . "</td></tr>";
+			echo "<br/>Joined Date : " . $row['JoinedDate'] . "";
 		  }
 		  
 		   if($row['Latest_Contribution_date']==null){
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  }	
 		  
 		  else {
-			echo "<tr><td align=right>Latest Contribution Date : </td><td>" . $row['Latest_Contribution_date'] . "</td></tr>";
+			echo "<br/>Latest Contribution Date : " . $row['Latest_Contribution_date'] . "";
 		  }
 		  
 		   if($row['TotalGivingAmount']==null){
-			echo "<tr><td valign=top align=right>&nbsp;</td><td valign=top>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		  }	
 		  
 		  else {
-			echo "<tr><td valign=top align=right>Total Giving Amount : </td><td valign=top>" . $row['TotalGivingAmount'] . "</td></tr>";
+			echo "<br/>Total Giving Amount : " . $row['TotalGivingAmount'] . "";
 		  }
 		  //echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\"></td>";
 		  //echo "<td align=right>Company Name : </td><td>" . $row['company_name'] . "</td></tr>";
@@ -86,7 +85,6 @@ if(mysql_num_rows($result)==0) {
 		  //echo "<tr><td align=right>Latest Contribution Date : </td><td>" . $row['Latest_Contribution_date'] . "</td></tr>";
 		  //echo "<tr><td valign=top align=right>Total Giving Amount : </td><td valign=top>" . $row['TotalGivingAmount'] . "</td></tr>";
 		  }
-		echo "</table>";
 		// echo "<a href=\"#\" onclick=\"window.open(\'https://www.facebook.com/sharer/sharer.php?u=\'+encodeURIComponent(location.href), \'facebook-share-dialog\', \'width=626,height=436\'); return false;\"><br><img src=\"FB.png\" width=\"109\" height=\"25\"></a> <a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-lang=\"en\"><img src=\"TW.png\" width=\"109\" heigt\"25\"> </a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"https://platform.twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}";
 	
 	//  [DATA EXTRACT] Extracting the Country Data 
@@ -101,7 +99,7 @@ if(mysql_num_rows($result)==0) {
 		} 
 		else {
 			while($row = mysql_fetch_array($result6)){
-				echo "Country : ".$row['countryname']."<Br/>";	
+				echo "<br/>Country : ".$row['countryname']."<Br/>";	
 			}
 		}
 		

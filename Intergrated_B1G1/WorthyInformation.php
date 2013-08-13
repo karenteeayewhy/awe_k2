@@ -32,43 +32,42 @@ where rid = 5 and status = 1 and wcid = ". $id ."");
 		
 if(mysql_num_rows($result)==0) {
 	
-	echo "<b>The Worthy information is temporary not exist. It will be updated soon. Sorry for any inconvenience caused.<b>";
-	
+	echo "<b>Error : Four Oh Four</b><br/>";	
+	echo "<b>The Worthy Cause information for this item is currently being updated. Sorry for any inconvenience caused.</b>";	
 } else {
 		
 		// Writing it out into a table.
-		echo "<table border='0'>";
 
 		while($row = mysql_fetch_array($result))
 		  {
 		  if($row['logo_url']==null) {	
-			echo "<tr><td align=left rowspan=\"4\">&nbsp;</td>";
+			echo "&nbsp;";
 		} else{
-			echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/WC/" . $row['logo_url'] . "\"></td>";
+			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/WC/" . $row['logo_url'] . "\">";
 		}
 		
 		if($row['key_org_name']==null) {	
-			echo "<td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		} else{
-			echo "<td align=right>Key Organization Name :</td><td>" . $row['key_org_name'] . "</td></tr>";
+			echo "<Br/>Key Organization Name :" . $row['key_org_name'] . "";
 		}
 		
 		if($row['org_type']==null) {	
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		} else{
-			echo "<tr><td align=right>Organization Type :</td><td>" . $row['org_type'] . "</td></tr>";
+			echo "<Br/>Organization Type :" . $row['org_type'] . "";
 		}
 		
 		if($row['org_phone']==null) {	
-			echo "<tr><td align=right>&nbsp;</td><td>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		} else{
-			echo "<tr><td align=right>Organization Phone :</td><td>" . $row['org_phone'] . "</td></tr>";
+			echo "<Br/>Organization Phone :" . $row['org_phone'] . "";
 		}
 		
 		if($row['org_website']==null) {	
-			echo "<tr><td valign=top align=right>&nbsp;</td><td valign=top>&nbsp;</td></tr>";
+			echo "&nbsp;";
 		} else{
-			echo "<tr><td valign=top align=right>Organization Website:</td><td valign=top>". $row['org_website'] . "</td></tr>";
+			echo "<Br/>Organization Website:". $row['org_website'] . "";
 		}
 	
 		//  echo "<tr><td align=left rowspan=\"4\"><img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/WC/" . $row['logo_url'] . "\"></td>";
@@ -77,7 +76,7 @@ if(mysql_num_rows($result)==0) {
 		//  echo "<tr><td align=right>Organization Phone :</td><td>" . $row['org_phone'] . "</td></tr>";
 		//  echo "<tr><td valign=top align=right>Organization Website:</td><td valign=top>" . $row['org_website'] . "</td></tr>";
 		  }
-		echo "</table>";
+		
 		// echo "<a href=\"#\" onclick=\"window.open(\'https://www.facebook.com/sharer/sharer.php?u=\'+encodeURIComponent(location.href), \'facebook-share-dialog\', \'width=626,height=436\'); return false;\"><br><img src=\"FB.png\" width=\"109\" height=\"25\"></a> <a href=\"https://twitter.com/share\" class=\"twitter-share-button\" data-lang=\"en\"><img src=\"TW.png\" width=\"109\" heigt\"25\"> </a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=\"https://platform.twitter.com/widgets.js\";fjs.parentNode.insertBefore(js,fjs);}";
 	
 	//  [DATA EXTRACT] Extracting the worthy Data 
