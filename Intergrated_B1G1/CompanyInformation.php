@@ -9,7 +9,7 @@
 
 <?php
 
-require("dataBaseInfo.php");
+require("dataBaseInfo2.php");
  
 $id=$_GET["id"];
 $type=$_GET["type"];
@@ -45,11 +45,7 @@ if(mysql_num_rows($result)==0) {
 		  }	
 		  
 		  else {
-<<<<<<< HEAD
-			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\">";
-=======
 			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/company/" . $row['logoURL'] . "\"alt='Four Oh Four'\">";
->>>>>>> a1d287393db05da6a570aae736773dcc5b79434d
 		  }
 		  
 		   if($row['company_name']==null){
