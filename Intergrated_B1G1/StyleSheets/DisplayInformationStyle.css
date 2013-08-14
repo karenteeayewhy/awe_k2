@@ -1,0 +1,18 @@
+.style1 {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+
+body,td,th {
+	font-family: Geneva, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+}
+
+img.border {
+			display: block;
+			padding:8px;
+			border:solid;
+			border-color: #dddddd #aaaaaa #aaaaaa #dddddd;
+			border-width: 1px 2px 2px 1px;
+			background-color:white;
+		}
