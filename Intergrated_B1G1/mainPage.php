@@ -2,7 +2,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title>B1G1 World - New Version - Changing the World !</title>
-	<link rel="stylesheet" type="text/css" href="StyleSheets/MainPageStyle.css">
+    <link rel="stylesheet" type="text/css" href="StyleSheets/DisplayInformationStyle.css">
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsAYjYn6pcqjwGrdneXsdaOjaas2aIutI&sensor=false"></script>
     <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'></script>
 	<script type="text/javascript">
