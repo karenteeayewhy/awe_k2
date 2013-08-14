@@ -10,7 +10,32 @@
 <?php
 
 require("dataBaseInfo.php");
+function remoteFileExists($url) {
+									$curl = curl_init($url);
 
+									//don't fetch the actual page, you only want to check the connection is ok
+									curl_setopt($curl, CURLOPT_NOBODY, true);
+
+									//do request
+									$result = curl_exec($curl);
+
+									$ret = false;
+
+									//if request did not fail
+									if ($result !== false) {
+										//if request was ok, check response code
+										$statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);  
+
+										if ($statusCode == 200) {
+											$ret = true;   
+										}
+									}
+
+									curl_close($curl);
+
+									return $ret;
+								}
+												
 $id=$_GET["id"];
 $type=$_GET["type"];
   
@@ -42,8 +67,8 @@ if(mysql_num_rows($result)==0) {
 		  if($row['pic1URL']==null){
 			echo "&nbsp;";
 		  }	
-			 else {			
-				echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\"alt='Four Oh Four'\">";
+			 else {																
+					echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\"alt='Four Oh Four'\">";
 		  }
 		
 			echo "&nbsp;";
