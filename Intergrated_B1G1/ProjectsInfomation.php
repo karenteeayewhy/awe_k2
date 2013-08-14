@@ -9,7 +9,7 @@
 
 <?php
 
-require("dataBaseInfo2.php");
+require("dataBaseInfo.php");
  
 $id=$_GET["id"];
 $type=$_GET["type"];
@@ -43,9 +43,15 @@ if(mysql_num_rows($result)==0) {
 			echo "&nbsp;";
 		  }		  
 		  else {
+<<<<<<< HEAD
 			echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\">";
 		  }
 		  
+=======
+				echo "<img class=\"border\" src=\"https://www.b1g1.com/buy1give1/sites/default/files/project/" . $row['pic1URL'] . "\"alt='Four Oh Four'\">";
+		  }
+		 
+>>>>>>> a1d287393db05da6a570aae736773dcc5b79434d
 			echo "&nbsp;";
 		  
 		  if($row['proj_title']==null){

@@ -1,5 +1,5 @@
 <?php
-require("dataBaseInfo2.php");
+require("dataBaseInfo.php");
 
 header("Content-type: text/javascript");
 
